@@ -2,36 +2,37 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Kintone API テスト</title>
+  <title>Kintone API サンプル</title>
 </head>
 <body>
-  <h1>Kintone データ表示テスト</h1>
-  <button id="load">データを読み込む</button>
-  <pre id="result">ここに結果が出ます</pre>
+  <h1>Kintone API データ取得</h1>
+  <button id="fetchBtn">データ取得</button>
+  <pre id="result"></pre>
 
   <script>
-    document.getElementById("load").addEventListener("click", async () => {
-      const resultArea = document.getElementById("result");
+    document.getElementById("fetchBtn").addEventListener("click", async () => {
+      const appId = "119";   // 例: 1
+      const apiToken = "OdizAFPJM9PhM5AXLfmEDLfEPXRfMXLKKFw6pGan"; // 例: xxxxxxx
+
+      const url = `https://tokaiseibi.cybozu.com/k/v1/records.json?app=${appId}`;
 
       try {
-        // 🔹 ここを自分の環境に書き換える
-        const subdomain = "tokaiseibi"; // あなたのkintoneサブドメイン
-        const appId = "119";       // アプリID
-        const apiToken = "OdizAFPJM9PhM5AXLfmEDLfEPXRfMXLKKFw6pGan";  // APIトークン（読み取り権限）
-
-        const url = `https://${subdomain}.cybozu.com/k/v1/records.json?app=${appId}`;
         const response = await fetch(url, {
+          method: "GET",
           headers: {
-            "X-Cybozu-API-Token": apiToken
+            "X-Cybozu-API-Token": apiToken,
+            "Content-Type": "application/json"
           }
         });
 
-        if (!response.ok) throw new Error("エラー: " + response.status);
+        if (!response.ok) {
+          throw new Error("HTTPエラー: " + response.status);
+        }
 
         const data = await response.json();
-        resultArea.textContent = JSON.stringify(data, null, 2);
-      } catch (e) {
-        resultArea.textContent = "失敗しました: " + e.message;
+        document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        document.getElementById("result").textContent = "失敗しました: " + error.message;
       }
     });
   </script>
