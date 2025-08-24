@@ -2,10 +2,38 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>駐車場 空き状況</title>
+  <title>Kintone API テスト</title>
 </head>
 <body>
-  <h1>こんにちは！これは駐車場管理サイトです。</h1>
-  <p>ここにkintoneのデータが表示される予定です。</p>
+  <h1>Kintone データ表示テスト</h1>
+  <button id="load">データを読み込む</button>
+  <pre id="result">ここに結果が出ます</pre>
+
+  <script>
+    document.getElementById("load").addEventListener("click", async () => {
+      const resultArea = document.getElementById("result");
+
+      try {
+        // 🔹 ここを自分の環境に書き換える
+        const subdomain = "tokaiseibi"; // あなたのkintoneサブドメイン
+        const appId = "119";       // アプリID
+        const apiToken = "OdizAFPJM9PhM5AXLfmEDLfEPXRfMXLKKFw6pGan";  // APIトークン（読み取り権限）
+
+        const url = `https://${subdomain}.cybozu.com/k/v1/records.json?app=${appId}`;
+        const response = await fetch(url, {
+          headers: {
+            "X-Cybozu-API-Token": apiToken
+          }
+        });
+
+        if (!response.ok) throw new Error("エラー: " + response.status);
+
+        const data = await response.json();
+        resultArea.textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        resultArea.textContent = "失敗しました: " + e.message;
+      }
+    });
+  </script>
 </body>
 </html>
